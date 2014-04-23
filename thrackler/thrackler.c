@@ -77,11 +77,52 @@ int nv; //number of vertices
 int ni; //number of intersections
 int ne; //number of (undirected) edges in the cross graph
 
+int numberedEdges[MAXE][2];
+int edgeCount;
+
+int intersectionCount;
+
 unsigned long long int numberOfThrackles = 0;
 
 
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Stores the edges in the 
+ */
+void orderEdges(GRAPH graph, ADJACENCY adj){
+    int i, j;
+    edgeCount = 0;
+    for(i = 1; i <= graph[0][0]; i++){
+        for(j = 0; j < adj[i]; j++){
+            if(i < graph[i][j]){
+                numberedEdges[edgeCount][0] = i - 1;
+                numberedEdges[edgeCount][0] = graph[i][j] - 1;
+                edgeCount++;
+            }
+        }
+    }
+}
+
+void calculateCounts(GRAPH graph, ADJACENCY adj){
+    int i;
+    //number of vertices
+    nv = graph[0][0];
+    //number of intersections
+    intersectionCount = edgeCount*edgeCount + edgeCount;
+    for(i = 1; i <= nv; i++){
+        intersectionCount -= adj[i]*adj[i];
+    }
+    intersectionCount /= 2;
+}
+
+void printStartSummary(){
+    fprintf(stderr, "Input graph has %d %s and %d edge%s.\n",
+            nv, nv == 1 ? "vertex" : "vertices",
+            edgeCount, edgeCount==1 ? "" : "s");
+    fprintf(stderr, "A thrackle embedding for this graph will have %d intersection%s.\n",
+            intersectionCount, intersectionCount == 1 ? "" : "s");
+}
 
 //=============== Writing thrackle_code of graph ===========================
 
@@ -204,8 +245,9 @@ int main(int argc, char *argv[]) {
     ADJACENCY adj;
     if (readMultiCode(code, &length, stdin)) {
         decodeMultiCode(code, length, graph, adj);
-    
-        
+        orderEdges(graph, adj);
+        calculateCounts(graph, adj);
+        printStartSummary();
     } else {
         fprintf(stderr, "Input contains no graph -- exiting!\n");
     }
