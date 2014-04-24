@@ -174,6 +174,7 @@ void startThrackling(){
     secondEdge->startType = secondEdge->endType = VERTEX;
     if(degree[from]==0){
         secondEdge->next = secondEdge->prev = secondEdge;
+        firstedge[from] = secondEdge;
     } else {
         secondEdge->next = secondEdge->prev = firstedge[from];
         firstedge[from]->next = firstedge[from]->prev = secondEdge;
@@ -185,6 +186,7 @@ void startThrackling(){
     inverseSecondEdge->startType = inverseSecondEdge->endType = VERTEX;
     if(degree[to]==0){
        inverseSecondEdge->next = inverseSecondEdge->prev = inverseSecondEdge;
+       firstedge[to] = inverseSecondEdge;
     } else {
         inverseSecondEdge->next = inverseSecondEdge->prev = firstedge[to];
         firstedge[to]->next = firstedge[to]->prev = inverseSecondEdge;
@@ -192,6 +194,9 @@ void startThrackling(){
     
     secondEdge->inverse = inverseSecondEdge;
     inverseSecondEdge->inverse = secondEdge;
+    
+    degree[from]++;
+    degree[to]++;
     
     edgeCounter++;
     
