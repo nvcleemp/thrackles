@@ -262,6 +262,11 @@ void orderEdges(GRAPH graph, ADJACENCY adj){
             exit(EXIT_FAILURE);
         }
     }
+    
+    if(edgeCount > 64){
+        fprintf(stderr, "Currently only supports up to 64 edges -- exiting!\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void calculateCounts(GRAPH graph, ADJACENCY adj){
