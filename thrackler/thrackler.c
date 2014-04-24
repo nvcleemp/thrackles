@@ -150,18 +150,49 @@ void startThrackling(){
     doNextEdge();
 }
 
+//some macros for the stack in the next method
+#define INITSTACK(stack, maxsize) int top = 0; int stack[maxsize]
+#define PUSH(stack, value) stack[top++] = (value)
+#define POP(stack) stack[--top]
+#define STACKISEMPTY top==0
+#define STACKISNOTEMPTY top>0
+
 /**
- * Stores the edges in the 
+ * Stores the edges in the array numberedEdges.
+ * The edges are numbered such that for each 0 <= i < #edges we have that
+ * the graph induced by the edges 0 up to i is connected.
  */
 void orderEdges(GRAPH graph, ADJACENCY adj){
     int i, j;
     edgeCount = 0;
+    boolean isStored[graph[0][0]+1][graph[0][0]+1];
+    boolean isVisited[graph[0][0]+1];
     for(i = 1; i <= graph[0][0]; i++){
-        for(j = 0; j < adj[i]; j++){
-            if(i < graph[i][j]){
-                numberedEdges[edgeCount][0] = i - 1;
-                numberedEdges[edgeCount][0] = graph[i][j] - 1;
+        for(j = 1; j <= graph[0][0]; j++){
+            isStored[i][j] = FALSE;
+        }
+        isVisited[i] = FALSE;
+    }
+    
+    INITSTACK(vertexStack, nv);
+    PUSH(vertexStack, 1); //push first vertex on the stack
+    isVisited[1] = TRUE;
+    
+    while(STACKISNOTEMPTY){
+        int currentVertex = POP(vertexStack);
+        for(j = 0; j < adj[currentVertex]; j++){
+            int currentNeighbour = graph[currentVertex][j];
+            if(!isVisited[currentNeighbour]){
+                PUSH(vertexStack, currentNeighbour);
+                isVisited[currentNeighbour] = TRUE;
+            }
+            if(!isStored[currentVertex][currentNeighbour]){
+                numberedEdges[edgeCount][0] = currentVertex - 1;
+                numberedEdges[edgeCount][0] = currentNeighbour - 1;
                 edgeCount++;
+                isStored[currentVertex][currentNeighbour] =
+                        isStored[currentNeighbour][currentVertex] = 
+                        TRUE;
             }
         }
     }
