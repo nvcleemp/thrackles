@@ -136,8 +136,8 @@ void startThrackling(){
     inverseFirstEdge->edgeNumber = edgeCounter;
     inverseFirstEdge->start = to;
     inverseFirstEdge->end = from;
-    inverseFirstEdge->startType = firstEdge->endType = VERTEX;
-    inverseFirstEdge->next = firstEdge->prev = NULL;
+    inverseFirstEdge->startType = inverseFirstEdge->endType = VERTEX;
+    inverseFirstEdge->next = inverseFirstEdge->prev = NULL;
     
     firstEdge->inverse = inverseFirstEdge;
     inverseFirstEdge->inverse = firstEdge;
