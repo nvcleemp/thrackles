@@ -122,10 +122,10 @@ void startThrackling(){
         degree[i] = 0;
     }
     
+    //first edge
     from = numberedEdges[edgeCounter][0];
     to = numberedEdges[edgeCounter][1];
     
-    //first edge
     EDGE *firstEdge = edges + crossGraphEdgeCounter++;
     firstEdge->edgeNumber = edgeCounter;
     firstEdge->start = from;
