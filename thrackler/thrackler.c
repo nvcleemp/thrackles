@@ -148,6 +148,48 @@ void startThrackling(){
     
     edgeCounter++;
     
+    if(edgeCount == 1){
+        //handle completed thrackle
+        return;
+    }
+    
+    //second edge
+    from = numberedEdges[edgeCounter][0];
+    to = numberedEdges[edgeCounter][1];
+    
+    EDGE *secondEdge = edges + crossGraphEdgeCounter++;
+    secondEdge->edgeNumber = edgeCounter;
+    secondEdge->start = from;
+    secondEdge->end = to;
+    secondEdge->startType = secondEdge->endType = VERTEX;
+    if(degree[from]==0){
+        secondEdge->next = secondEdge->prev = NULL;
+    } else {
+        secondEdge->next = secondEdge->prev = firstedge[from];
+        firstedge[from]->next = firstedge[from]->prev = secondEdge;
+    }
+    EDGE *inverseSecondEdge = edges + crossGraphEdgeCounter++;
+    inverseSecondEdge->edgeNumber = edgeCounter;
+    inverseSecondEdge->start = to;
+    inverseSecondEdge->end = from;
+    inverseSecondEdge->startType = inverseSecondEdge->endType = VERTEX;
+    if(degree[to]==0){
+       inverseSecondEdge->next = inverseSecondEdge->prev = NULL;
+    } else {
+        inverseSecondEdge->next = inverseSecondEdge->prev = firstedge[to];
+        firstedge[to]->next = firstedge[to]->prev = inverseSecondEdge;
+    }
+    
+    secondEdge->inverse = inverseSecondEdge;
+    inverseSecondEdge->inverse = secondEdge;
+    
+    edgeCounter++;
+    
+    if(edgeCount == 2){
+        //handle completed thrackle
+        return;
+    }
+    
     doNextEdge();
 }
 
