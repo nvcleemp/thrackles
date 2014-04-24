@@ -246,7 +246,7 @@ void orderEdges(GRAPH graph, ADJACENCY adj){
             }
             if(!isStored[currentVertex][currentNeighbour]){
                 numberedEdges[edgeCount][0] = currentVertex - 1;
-                numberedEdges[edgeCount][0] = currentNeighbour - 1;
+                numberedEdges[edgeCount][1] = currentNeighbour - 1;
                 edgeCount++;
                 isStored[currentVertex][currentNeighbour] =
                         isStored[currentNeighbour][currentVertex] = 
