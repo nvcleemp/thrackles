@@ -114,24 +114,26 @@ void startThrackling(){
     int i, from, to;
     
     intersectionCounter = 0;
+    crossGraphEdgeCounter = 0;
+    edgeCounter = 0;
     
     for(i = 0; i < nv + intersectionCount; i++){
         firstedge[i] = NULL;
         degree[i] = 0;
     }
     
-    from = numberedEdges[0][0];
-    to = numberedEdges[0][1];
+    from = numberedEdges[edgeCounter][0];
+    to = numberedEdges[edgeCounter][1];
     
     //first edge
-    EDGE *firstEdge = edges + 0;
-    firstEdge->edgeNumber = 0;
+    EDGE *firstEdge = edges + crossGraphEdgeCounter++;
+    firstEdge->edgeNumber = edgeCounter;
     firstEdge->start = from;
     firstEdge->end = to;
     firstEdge->startType = firstEdge->endType = VERTEX;
     firstEdge->next = firstEdge->prev = NULL;
-    EDGE *inverseFirstEdge = edges + 1;
-    inverseFirstEdge->edgeNumber = 0;
+    EDGE *inverseFirstEdge = edges + crossGraphEdgeCounter++;
+    inverseFirstEdge->edgeNumber = edgeCounter;
     inverseFirstEdge->start = to;
     inverseFirstEdge->end = from;
     inverseFirstEdge->startType = firstEdge->endType = VERTEX;
@@ -144,8 +146,7 @@ void startThrackling(){
     firstedge[to] = inverseFirstEdge;
     degree[from] = degree[to] = 1;
     
-    edgeCounter = 1;
-    crossGraphEdgeCounter = 2;
+    edgeCounter++;
     
     doNextEdge();
 }
