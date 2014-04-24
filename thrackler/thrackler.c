@@ -95,10 +95,16 @@ void writeThrackleCode();
 
 //////////////////////////////////////////////////////////////////////////////
 
+void handleThrackle(){
+    numberOfThrackles++;
+    ni = intersectionCounter;
+    writeThrackleCode();
+}
+
 void doNextEdge(){
     if(edgeCounter == edgeCount){
         //all edges are embedded
-        //handle completed thrackle
+        handleThrackle();
         return;
     }
     
@@ -153,7 +159,7 @@ void startThrackling(){
     edgeCounter++;
     
     if(edgeCount == 1){
-        //handle completed thrackle
+        handleThrackle();
         return;
     }
     
@@ -190,7 +196,7 @@ void startThrackling(){
     edgeCounter++;
     
     if(edgeCount == 2){
-        //handle completed thrackle
+        handleThrackle();
         return;
     }
     
