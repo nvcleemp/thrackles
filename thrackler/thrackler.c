@@ -82,10 +82,73 @@ int edgeCount;
 
 int intersectionCount;
 
+int edgeCounter;
+int crossGraphEdgeCounter;
+int intersectionCounter;
+
 unsigned long long int numberOfThrackles = 0;
 
 
 //////////////////////////////////////////////////////////////////////////////
+
+void doNextEdge(){
+    if(edgeCounter == edgeCount){
+        //all edges are embedded
+        //handle completed thrackle
+        return;
+    }
+    
+    int from, to;
+    
+    int currentEdge = edgeCounter++;
+    
+    from = numberedEdges[currentEdge][0];
+    to = numberedEdges[currentEdge][1];
+    
+    //weave edge through current thrackle
+    
+    edgeCounter--;
+}
+
+void startThrackling(){
+    int i, from, to;
+    
+    intersectionCounter = 0;
+    
+    for(i = 0; i < nv + intersectionCount; i++){
+        firstedge[i] = NULL;
+        degree[i] = 0;
+    }
+    
+    from = numberedEdges[0][0];
+    to = numberedEdges[0][1];
+    
+    //first edge
+    EDGE *edge = edges + 0;
+    edge->edgeNumber = 0;
+    edge->start = from;
+    edge->end = to;
+    edge->startType = edge->endType = VERTEX;
+    edge->next = edge->prev = NULL;
+    EDGE *inverseEdge = edges + 1;
+    inverseEdge->edgeNumber = 0;
+    inverseEdge->start = to;
+    inverseEdge->end = from;
+    inverseEdge->startType = edge->endType = VERTEX;
+    inverseEdge->next = edge->prev = NULL;
+    
+    edge->inverse = inverseEdge;
+    inverseEdge->inverse = edge;
+    
+    firstedge[from] = edge;
+    firstedge[to] = inverseEdge;
+    degree[from] = degree[to] = 1;
+    
+    edgeCounter = 1;
+    crossGraphEdgeCounter = 2;
+    
+    doNextEdge();
+}
 
 /**
  * Stores the edges in the 
