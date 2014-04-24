@@ -196,6 +196,14 @@ void orderEdges(GRAPH graph, ADJACENCY adj){
             }
         }
     }
+    
+    //verify that the input graph was connected
+    for(i = 1; i <= graph[0][0]; i++){
+        if(!isVisited[i]){
+            fprintf(stderr, "Input graph was not connected -- exiting!\n");
+            exit(EXIT_FAILURE);
+        }
+    }
 }
 
 void calculateCounts(GRAPH graph, ADJACENCY adj){
