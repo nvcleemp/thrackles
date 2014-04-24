@@ -403,6 +403,7 @@ int main(int argc, char *argv[]) {
         orderEdges(graph, adj);
         calculateCounts(graph, adj);
         printStartSummary();
+        startThrackling();
     } else {
         fprintf(stderr, "Input contains no graph -- exiting!\n");
     }
