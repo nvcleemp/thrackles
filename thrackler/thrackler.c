@@ -124,24 +124,24 @@ void startThrackling(){
     to = numberedEdges[0][1];
     
     //first edge
-    EDGE *edge = edges + 0;
-    edge->edgeNumber = 0;
-    edge->start = from;
-    edge->end = to;
-    edge->startType = edge->endType = VERTEX;
-    edge->next = edge->prev = NULL;
-    EDGE *inverseEdge = edges + 1;
-    inverseEdge->edgeNumber = 0;
-    inverseEdge->start = to;
-    inverseEdge->end = from;
-    inverseEdge->startType = edge->endType = VERTEX;
-    inverseEdge->next = edge->prev = NULL;
+    EDGE *firstEdge = edges + 0;
+    firstEdge->edgeNumber = 0;
+    firstEdge->start = from;
+    firstEdge->end = to;
+    firstEdge->startType = firstEdge->endType = VERTEX;
+    firstEdge->next = firstEdge->prev = NULL;
+    EDGE *inverseFirstEdge = edges + 1;
+    inverseFirstEdge->edgeNumber = 0;
+    inverseFirstEdge->start = to;
+    inverseFirstEdge->end = from;
+    inverseFirstEdge->startType = firstEdge->endType = VERTEX;
+    inverseFirstEdge->next = firstEdge->prev = NULL;
     
-    edge->inverse = inverseEdge;
-    inverseEdge->inverse = edge;
+    firstEdge->inverse = inverseFirstEdge;
+    inverseFirstEdge->inverse = firstEdge;
     
-    firstedge[from] = edge;
-    firstedge[to] = inverseEdge;
+    firstedge[from] = firstEdge;
+    firstedge[to] = inverseFirstEdge;
     degree[from] = degree[to] = 1;
     
     edgeCounter = 1;
