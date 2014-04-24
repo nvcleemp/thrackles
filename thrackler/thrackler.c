@@ -115,6 +115,8 @@ typedef unsigned long long int bitset;
 #define SAFE_REMOVE(s, el) ADD(s, el); REMOVE(s, el)
 #define SAFE_REMOVE_ALL(s, elements) ADD_ALL(s, elements); REMOVE_ALL(s, elements)
 #define ALL_UP_TO(el) (SINGLETON((el)+1)-1)
+#define TOGGLE(s, el) ((s) ^= SINGLETON(el))
+#define TOGGLE_ALL(s, elements) ((s) ^= (elements))
 
 //////////////////////////////////////////////////////////////////////////////
 
