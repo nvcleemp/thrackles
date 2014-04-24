@@ -145,6 +145,23 @@ void doNextEdge(){
     to = numberedEdges[currentEdge][1];
     
     //weave edge through current thrackle
+    EDGE *e, *elast, newEdge;
+    
+    bitset nonIntersectedEdges = ALL_UP_TO(currentEdge-1);
+    
+    //the vertex from will always have a degree different from 0
+    e = elast = firstedge[from];
+    do {
+        REMOVE(nonIntersectedEdges, e->edgeNumber);
+        e = e->next;
+    } while (e != elast);
+    if(degree[to]>0){
+        e = elast = firstedge[to];
+        do {
+            REMOVE(nonIntersectedEdges, e->edgeNumber);
+            e = e->next;
+        } while (e != elast);
+    }
     
     edgeCounter--;
 }
