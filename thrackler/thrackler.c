@@ -38,7 +38,7 @@ typedef int boolean;
 typedef int VERTEXTYPE;
 
 #define VERTEX 0
-#define INTERSECTION 1
+#define EDGEINTERSECTION 1
 #define IS_VERTEX(v) !(v)
 #define IS_INTERSECTION(v) (v)
 
