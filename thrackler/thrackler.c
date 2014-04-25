@@ -125,6 +125,28 @@ void doNextEdge();
 
 //////////////////////////////////////////////////////////////////////////////
 
+//debugging methods
+
+void printThrackle(){
+    int i;
+    EDGE *e, *elast;
+    
+    fprintf(stderr, "Vertices: %d\nIntersections: %d\n", nv, ni);
+    
+    for(i=0; i<nv + ni; i++){
+        e = elast = firstedge[i];
+        fprintf(stderr, "%d) ", i+1);
+        do {
+            fprintf(stderr, "%d ", (e->end)+1);
+            e = e->next;
+        } while (e != elast);
+        fprintf(stderr, "\n");
+    }
+    fprintf(stderr, "\n");
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 void handleThrackle(){
     numberOfThrackles++;
     ni = intersectionCounter;
