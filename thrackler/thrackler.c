@@ -121,6 +121,7 @@ typedef unsigned long long int bitset;
 //////////////////////////////////////////////////////////////////////////////
 
 void writeThrackleCode();
+void doNextEdge();
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +129,122 @@ void handleThrackle(){
     numberOfThrackles++;
     ni = intersectionCounter;
     writeThrackleCode();
+}
+
+void intersectNextEdge(EDGE *neighbouringEdge,
+        bitset nonIntersectedEdges, int currentEdge, int targetVertex){
+    if(IS_NOT_EMPTY(nonIntersectedEdges)){
+        //we still need to intersect some edges
+        
+    } else {
+        //we have intersected all edges: check that target vertex is in the current face
+        
+        if(degree[targetVertex]==0){
+            //vertex is not yet in the graph
+            EDGE* newEdge = edges + crossGraphEdgeCounter++;
+            EDGE* newEdgeInverse = edges + crossGraphEdgeCounter++;
+            
+            int startVertex = neighbouringEdge->start;
+            VERTEXTYPE startVertexType = neighbouringEdge->startType;
+            
+            newEdge->start = startVertex;
+            newEdge->startType = startVertexType;
+            newEdge->end = targetVertex;
+            newEdge->endType = VERTEX;
+            newEdge->edgeNumber = currentEdge;
+            
+            EDGE *nextEdge = neighbouringEdge->next;
+            neighbouringEdge->next = newEdge;
+            newEdge->prev = neighbouringEdge;
+            nextEdge->prev = newEdge;
+            newEdge->next = nextEdge;
+
+            newEdgeInverse->start = targetVertex;
+            newEdgeInverse->startType = VERTEX;
+            newEdgeInverse->end = startVertex;
+            newEdgeInverse->endType = startVertexType;
+            newEdgeInverse->next = newEdgeInverse->prev = newEdgeInverse;
+
+            newEdge->inverse = newEdgeInverse;
+            newEdgeInverse->inverse = newEdge;
+            
+            degree[startVertex]++;
+            degree[targetVertex] = 1;
+            firstedge[targetVertex] = newEdgeInverse;
+            
+            //go to next edge
+            doNextEdge();
+            
+            //backtracking
+            degree[startVertex]--;
+            degree[targetVertex] = 0;
+            crossGraphEdgeCounter -= 2;
+            nextEdge->prev = neighbouringEdge;
+            neighbouringEdge->next = nextEdge;
+        } else {
+            EDGE *e, *elast;
+            e = elast = neighbouringEdge;
+            do {
+                if(e->end == targetVertex){
+                    break;
+                }
+                e = e->inverse->prev;
+            } while (e != elast);
+
+            if(e->end != targetVertex){
+                return;
+            }
+
+            //make connection with target vertex
+            EDGE* newEdge = edges + crossGraphEdgeCounter++;
+            EDGE* newEdgeInverse = edges + crossGraphEdgeCounter++;
+            
+            int startVertex = neighbouringEdge->start;
+            VERTEXTYPE startVertexType = neighbouringEdge->startType;
+            
+            newEdge->start = startVertex;
+            newEdge->startType = startVertexType;
+            newEdge->end = targetVertex;
+            newEdge->endType = VERTEX;
+            newEdge->edgeNumber = currentEdge;
+            
+            EDGE *nextEdge = neighbouringEdge->next;
+            neighbouringEdge->next = newEdge;
+            newEdge->prev = neighbouringEdge;
+            nextEdge->prev = newEdge;
+            newEdge->next = nextEdge;
+
+            newEdgeInverse->start = targetVertex;
+            newEdgeInverse->startType = VERTEX;
+            newEdgeInverse->end = startVertex;
+            newEdgeInverse->endType = startVertexType;
+            
+            EDGE *nextEdgeInverse = e->inverse;
+            EDGE *prevEdgeInverse = nextEdgeInverse->prev;
+            nextEdgeInverse->prev = newEdgeInverse;
+            newEdgeInverse->next = nextEdgeInverse;
+            prevEdgeInverse->next = newEdgeInverse;
+            newEdgeInverse->prev = prevEdgeInverse;
+
+            newEdge->inverse = newEdgeInverse;
+            newEdgeInverse->inverse = newEdge;
+            
+            degree[startVertex]++;
+            degree[targetVertex]++;
+            
+            //go to next edge
+            doNextEdge();
+            
+            //backtrack
+            degree[startVertex]--;
+            degree[targetVertex]--;
+            crossGraphEdgeCounter -= 2;
+            nextEdge->prev = neighbouringEdge;
+            neighbouringEdge->next = nextEdge;
+            nextEdgeInverse->prev = prevEdgeInverse;
+            prevEdgeInverse->next = nextEdgeInverse;
+        }
+    }
 }
 
 void doNextEdge(){
@@ -162,6 +279,13 @@ void doNextEdge(){
             e = e->next;
         } while (e != elast);
     }
+    
+    //add the first part of edge
+    e = elast = firstedge[from];
+    do {
+        intersectNextEdge(e, nonIntersectedEdges, currentEdge, to);
+        e = e->next;
+    } while (e != elast);
     
     edgeCounter--;
 }
