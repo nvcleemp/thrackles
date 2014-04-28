@@ -99,6 +99,8 @@ int intersectionCounter;
 
 unsigned long long int numberOfThrackles = 0;
 
+boolean justOne = FALSE;
+
 //bit vectors
 
 typedef unsigned long long int bitset;
@@ -176,6 +178,9 @@ void handleThrackle(){
     numberOfThrackles++;
     ni = intersectionCounter;
     writeThrackleCode();
+    if(justOne){
+        exit(EXIT_SUCCESS);
+    }
 }
 
 void intersectNextEdge(EDGE *neighbouringEdge,
@@ -693,12 +698,16 @@ int main(int argc, char *argv[]) {
     int c, i;
     char *name = argv[0];
     static struct option long_options[] = {
+        {"help", no_argument, NULL, '1'},
         {"help", no_argument, NULL, 'h'}
     };
     int option_index = 0;
 
-    while ((c = getopt_long(argc, argv, "h", long_options, &option_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "h1", long_options, &option_index)) != -1) {
         switch (c) {
+            case '1':
+                justOne = TRUE;
+                break;
             case 'h':
                 help(name);
                 return EXIT_SUCCESS;
