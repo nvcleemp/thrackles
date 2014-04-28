@@ -705,7 +705,7 @@ int main(int argc, char *argv[]) {
     int c, i;
     char *name = argv[0];
     static struct option long_options[] = {
-        {"help", no_argument, NULL, '1'},
+        {"one", no_argument, NULL, '1'},
         {"help", no_argument, NULL, 'h'}
     };
     int option_index = 0;
