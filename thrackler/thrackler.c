@@ -172,6 +172,90 @@ void intersectNextEdge(EDGE *neighbouringEdge,
     if(IS_NOT_EMPTY(nonIntersectedEdges)){
         //we still need to intersect some edges
         
+        EDGE *e, *elast;
+        e = elast = neighbouringEdge;
+        do {
+            if(CONTAINS(nonIntersectedEdges, e->edgeNumber)){
+                //we still need to intersect this edge, so let us try it
+                EDGE *neighbouringEdgeNext = neighbouringEdge->next;
+                EDGE *eInverse = e->inverse;
+                //the new edges crossing the face
+                EDGE *newCrossingEdge = edges + crossGraphEdgeCounter++;
+                EDGE *newCrossingEdgeInverse = edges + crossGraphEdgeCounter++;
+                //the other new edges created by the intersection
+                EDGE *newEdgeAtE = edges + crossGraphEdgeCounter++;
+                EDGE *newEdgeAtEInverse = edges + crossGraphEdgeCounter++;
+                
+                int newVertex = nv + intersectionCounter++;
+                
+                newCrossingEdge->start = neighbouringEdge->start;
+                newCrossingEdge->startType = neighbouringEdge->startType;
+                newCrossingEdge->end = newVertex;
+                newCrossingEdge->endType = EDGEINTERSECTION;
+                newCrossingEdge->edgeNumber = currentEdge;
+                newCrossingEdge->inverse = newCrossingEdgeInverse;
+                newCrossingEdge->prev = neighbouringEdge;
+                newCrossingEdge->next = neighbouringEdgeNext;
+                
+                newCrossingEdgeInverse->start = newVertex;
+                newCrossingEdgeInverse->startType = EDGEINTERSECTION;
+                newCrossingEdgeInverse->end = neighbouringEdge->start;
+                newCrossingEdgeInverse->endType = neighbouringEdge->startType;
+                newCrossingEdgeInverse->edgeNumber = currentEdge;
+                newCrossingEdgeInverse->inverse = newCrossingEdge;
+                newCrossingEdgeInverse->prev = newEdgeAtEInverse;
+                newCrossingEdgeInverse->next = newEdgeAtE;
+                
+                newEdgeAtE->start = newVertex;
+                newEdgeAtE->startType = EDGEINTERSECTION;
+                newEdgeAtE->end = e->start;
+                newEdgeAtE->endType = e->startType;
+                newEdgeAtE->edgeNumber = e->edgeNumber;
+                newEdgeAtE->inverse = e;
+                newEdgeAtE->prev = newCrossingEdgeInverse;
+                newEdgeAtE->next = newEdgeAtEInverse;
+                
+                newEdgeAtEInverse->start = newVertex;
+                newEdgeAtEInverse->startType = EDGEINTERSECTION;
+                newEdgeAtEInverse->end = eInverse->start;
+                newEdgeAtEInverse->endType = eInverse->startType;
+                newEdgeAtEInverse->edgeNumber = eInverse->edgeNumber;
+                newEdgeAtEInverse->inverse = eInverse;
+                newEdgeAtEInverse->prev = newEdgeAtE;
+                newEdgeAtEInverse->next = newCrossingEdgeInverse;
+                
+                e->inverse = newEdgeAtE;
+                eInverse->inverse = newEdgeAtEInverse;
+                neighbouringEdge->next = newCrossingEdge;
+                neighbouringEdgeNext->prev = newCrossingEdge;
+                e->end = newVertex;
+                e->endType = EDGEINTERSECTION;
+                eInverse->end = newVertex;
+                eInverse->endType = EDGEINTERSECTION;
+                
+                firstedge[newVertex] = newCrossingEdgeInverse;
+                degree[newVertex] = 3;
+                degree[neighbouringEdge->start]++;
+                
+                //go to next intersection
+                intersectNextEdge(newEdgeAtE, MINUS(nonIntersectedEdges, e->edgeNumber),
+                        currentEdge, targetVertex);
+                
+                //backtracking
+                intersectionCounter--;
+                crossGraphEdgeCounter-=4;
+                degree[neighbouringEdge->start]--;
+                e->inverse = eInverse;
+                eInverse->inverse = e;
+                neighbouringEdge->next = neighbouringEdgeNext;
+                neighbouringEdgeNext->prev = neighbouringEdge;
+                e->end = eInverse->start;
+                e->endType = eInverse->startType;
+                eInverse->end = e->start;
+                eInverse->endType = e->startType;
+            }
+            e = e->inverse->prev;
+        } while (e != elast);
     } else {
         //we have intersected all edges: check that target vertex is in the current face
         
