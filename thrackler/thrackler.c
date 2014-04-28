@@ -200,6 +200,7 @@ void intersectNextEdge(EDGE *neighbouringEdge,
             newEdgeInverse->end = startVertex;
             newEdgeInverse->endType = startVertexType;
             newEdgeInverse->next = newEdgeInverse->prev = newEdgeInverse;
+            newEdgeInverse->edgeNumber = currentEdge;
 
             newEdge->inverse = newEdgeInverse;
             newEdgeInverse->inverse = newEdge;
@@ -254,6 +255,7 @@ void intersectNextEdge(EDGE *neighbouringEdge,
             newEdgeInverse->startType = VERTEX;
             newEdgeInverse->end = startVertex;
             newEdgeInverse->endType = startVertexType;
+            newEdgeInverse->edgeNumber = currentEdge;
             
             EDGE *nextEdgeInverse = e->inverse;
             EDGE *prevEdgeInverse = nextEdgeInverse->prev;
