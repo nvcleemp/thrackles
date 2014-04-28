@@ -20,6 +20,17 @@
 #include <string.h>
 #include <time.h>
 
+//debug macros
+#ifdef DEBUG
+#define WHERESTR  "[file %s, line %d]: "
+#define WHEREARG  __FILE__, __LINE__
+#define DEBUGPRINT2(...)       fprintf(stderr, __VA_ARGS__)
+#define DEBUGPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt, WHEREARG, __VA_ARGS__)
+#define DEBUGCALL(call) call
+#else
+#define DEBUGPRINT(_fmt, ...)
+#define DEBUGCALL(call)
+#endif
 #include "shared/multicode_base.h"
 #include "shared/multicode_input.h"
 
@@ -176,6 +187,7 @@ void intersectNextEdge(EDGE *neighbouringEdge,
         e = elast = neighbouringEdge;
         do {
             if(CONTAINS(nonIntersectedEdges, e->edgeNumber)){
+                DEBUGPRINT("Current edge: %d -- intersecting %d\n", currentEdge + 1, e->edgeNumber + 1);
                 //we still need to intersect this edge, so let us try it
                 EDGE *neighbouringEdgeNext = neighbouringEdge->next;
                 EDGE *eInverse = e->inverse;
@@ -236,12 +248,14 @@ void intersectNextEdge(EDGE *neighbouringEdge,
                 firstedge[newVertex] = newCrossingEdgeInverse;
                 degree[newVertex] = 3;
                 degree[neighbouringEdge->start]++;
+                DEBUGCALL(printThrackle());
                 
                 //go to next intersection
                 intersectNextEdge(newEdgeAtE, MINUS(nonIntersectedEdges, e->edgeNumber),
                         currentEdge, targetVertex);
                 
                 //backtracking
+                DEBUGPRINT("Backtracking with edge %d\n", currentEdge + 1);
                 intersectionCounter--;
                 crossGraphEdgeCounter-=4;
                 degree[neighbouringEdge->start]--;
@@ -388,16 +402,20 @@ void doNextEdge(){
     
     bitset nonIntersectedEdges = ALL_UP_TO(currentEdge-1);
     
+    DEBUGPRINT("Next edge: %d (%d - %d)\n", currentEdge+1, from + 1, to + 1);
+    
     //the vertex from will always have a degree different from 0
     e = elast = firstedge[from];
     do {
         REMOVE(nonIntersectedEdges, e->edgeNumber);
+        DEBUGPRINT("Removing %d from non-intersected edges\n", e->edgeNumber + 1);
         e = e->next;
     } while (e != elast);
     if(degree[to]>0){
         e = elast = firstedge[to];
         do {
             REMOVE(nonIntersectedEdges, e->edgeNumber);
+            DEBUGPRINT("Removing %d from non-intersected edges\n", e->edgeNumber + 1);
             e = e->next;
         } while (e != elast);
     }
@@ -705,6 +723,7 @@ int main(int argc, char *argv[]) {
         orderEdges(graph, adj);
         calculateCounts(graph, adj);
         printStartSummary();
+        DEBUGCALL(printEdgeNumbering());
         startThrackling();
     } else {
         fprintf(stderr, "Input contains no graph -- exiting!\n");
