@@ -151,6 +151,14 @@ void printThrackle(){
     fprintf(stderr, "\n");
 }
 
+void printEdgeNumbering(){
+    int i;
+    
+    for(i = 0; i < edgeCount; i++){
+        fprintf(stderr, "%d) %2d - %2d\n", i+1, numberedEdges[i][0]+1, numberedEdges[i][1]+1);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 void handleThrackle(){
