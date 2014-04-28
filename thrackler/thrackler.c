@@ -131,13 +131,19 @@ void printThrackle(){
     int i;
     EDGE *e, *elast;
     
+    ni = intersectionCount;
+    
     fprintf(stderr, "Vertices: %d\nIntersections: %d\n", nv, ni);
     
     for(i=0; i<nv + ni; i++){
+        if(degree[i] == 0) {
+            fprintf(stderr, "%d)\n", i+1);
+            continue;
+        }
         e = elast = firstedge[i];
         fprintf(stderr, "%d) ", i+1);
         do {
-            fprintf(stderr, "%d ", (e->end)+1);
+            fprintf(stderr, "%d(%d) ", (e->end)+1, (e->edgeNumber)+1);
             e = e->next;
         } while (e != elast);
         fprintf(stderr, "\n");
