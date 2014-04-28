@@ -135,6 +135,7 @@ typedef unsigned long long int bitset;
 
 void writeThrackleCode();
 void doNextEdge();
+void printEndSummary();
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -179,6 +180,7 @@ void handleThrackle(){
     ni = intersectionCounter;
     writeThrackleCode();
     if(justOne){
+        printEndSummary();
         exit(EXIT_SUCCESS);
     }
 }
@@ -604,6 +606,11 @@ void printStartSummary(){
             intersectionCount, intersectionCount == 1 ? "" : "s");
 }
 
+void printEndSummary(){
+    fprintf(stderr, "Written %llu thrackle embedding%s.\n",
+            numberOfThrackles, numberOfThrackles == 1 ? "" : "s");
+}
+
 //=============== Writing thrackle_code of graph ===========================
 
 void writeThrackleCodeChar(){
@@ -734,6 +741,7 @@ int main(int argc, char *argv[]) {
         printStartSummary();
         DEBUGCALL(printEdgeNumbering());
         startThrackling();
+        printEndSummary();
     } else {
         fprintf(stderr, "Input contains no graph -- exiting!\n");
     }
