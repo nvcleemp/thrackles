@@ -101,6 +101,16 @@ unsigned long long int numberOfThrackles = 0;
 
 boolean justOne = FALSE;
 
+//variables for splitting the generation into parts
+int splitLevel = -1;
+int splitlevelCounter = 0;
+
+int currentPart = 0;
+int totalParts = 1;
+
+boolean splittingEnabled = FALSE;
+boolean testCommonPart = FALSE;
+
 //bit vectors
 
 typedef unsigned long long int bitset;
@@ -169,6 +179,9 @@ void printEdgeNumbering(){
     int i;
     
     for(i = 0; i < edgeCount; i++){
+        if(i == splitLevel){
+            fprintf(stderr, "==== splitlevel ====\n");
+        }
         fprintf(stderr, "%d) %2d - %2d\n", i+1, numberedEdges[i][0]+1, numberedEdges[i][1]+1);
     }
 }
@@ -176,6 +189,9 @@ void printEdgeNumbering(){
 //////////////////////////////////////////////////////////////////////////////
 
 void handleThrackle(){
+    if(testCommonPart){
+        return;
+    }
     numberOfThrackles++;
     ni = intersectionCounter;
     writeThrackleCode();
@@ -397,6 +413,14 @@ void doNextEdge(){
         return;
     }
     
+    if(edgeCounter == splitLevel){
+        int inPart = splitlevelCounter%totalParts;
+        splitlevelCounter++;
+        if(testCommonPart || (inPart != currentPart)){
+            return;
+        }
+    }
+    
     int from, to;
     
     int currentEdge = edgeCounter++;
@@ -607,8 +631,12 @@ void printStartSummary(){
 }
 
 void printEndSummary(){
-    fprintf(stderr, "Written %llu thrackle embedding%s.\n",
-            numberOfThrackles, numberOfThrackles == 1 ? "" : "s");
+    if(testCommonPart){
+        fprintf(stderr, "Reached splitlevel %d time%s.\n", splitlevelCounter, splitlevelCounter == 1 ? "" : "s");
+    } else {
+        fprintf(stderr, "Written %llu thrackle embedding%s.\n",
+                numberOfThrackles, numberOfThrackles == 1 ? "" : "s");
+    }
 }
 
 //=============== Writing thrackle_code of graph ===========================
@@ -691,6 +719,17 @@ void help(char *name) {
     fprintf(stderr, "Valid options\n=============\n");
     fprintf(stderr, "    -1, --one\n");
     fprintf(stderr, "       Stop the search when a thrackle embedding is found.\n");
+    fprintf(stderr, "    -m, --modulo r:n\n");
+    fprintf(stderr, "       Split the generation in multiple parts. The generation is split into n\n");
+    fprintf(stderr, "       parts and only part r is generated. The number n needs to be an integer\n");
+    fprintf(stderr, "       larger than 0 and r should be a positive integer smaller than n.\n");
+    fprintf(stderr, "    --split-level l\n");
+    fprintf(stderr, "       Sets the level at which point the generation will be split. By default,\n");
+    fprintf(stderr, "       this is set to 2/3 of the number of edges. The value l should lie\n");
+    fprintf(stderr, "       between 2 and the number of edges.\n");
+    fprintf(stderr, "    --test-common-part\n");
+    fprintf(stderr, "       Runs the generation up to the splitting point and reports the number of\n");
+    fprintf(stderr, "       times the splitting point is reached.\n");
     fprintf(stderr, "    -h, --help\n");
     fprintf(stderr, "       Print this help and return.\n");
 }
@@ -707,15 +746,57 @@ int main(int argc, char *argv[]) {
     int c, i;
     char *name = argv[0];
     static struct option long_options[] = {
+        {"test-common-part", no_argument, NULL, 0},
+        {"split-level", required_argument, NULL, 0},
         {"one", no_argument, NULL, '1'},
+        {"modulo", required_argument, NULL, 'm'},
         {"help", no_argument, NULL, 'h'}
     };
     int option_index = 0;
 
-    while ((c = getopt_long(argc, argv, "h1", long_options, &option_index)) != -1) {
+    char *splitting_string;
+    while ((c = getopt_long(argc, argv, "h1m:", long_options, &option_index)) != -1) {
         switch (c) {
+            case 0:
+                switch (option_index) {
+                    case 0:
+                        testCommonPart = TRUE;
+                        splittingEnabled = TRUE;
+                        break;
+                    case 1:
+                        splitLevel = atoi(optarg);
+                        break;
+                    default:
+                        fprintf(stderr, "Illegal option.\n");
+                        usage(name);
+                        return EXIT_FAILURE;
+                }
+                break;
             case '1':
                 justOne = TRUE;
+                break;
+            case 'm':
+                //modulo
+                splittingEnabled = TRUE;
+                splitting_string = optarg;
+                currentPart = atoi(splitting_string);
+                splitting_string = strchr(splitting_string, ':');
+                if(splitting_string==NULL){
+                    fprintf(stderr, "Illegal format for modulo.\n");
+                    usage(name);
+                    return EXIT_FAILURE;
+                }
+                totalParts = atoi(splitting_string+1);
+                if (currentPart >= totalParts) {
+                    fprintf(stderr, "Illegal format for modulo: rest must be smaller than mod.\n");
+                    usage(name);
+                    return EXIT_FAILURE;
+                }
+                if (currentPart < 0) {
+                    fprintf(stderr, "Illegal format for modulo: rest must be positive.\n");
+                    usage(name);
+                    return EXIT_FAILURE;
+                }
                 break;
             case 'h':
                 help(name);
@@ -741,6 +822,13 @@ int main(int argc, char *argv[]) {
         orderEdges(graph, adj);
         calculateCounts(graph, adj);
         printStartSummary();
+        if(splittingEnabled && splitLevel < 2){
+            splitLevel = 2*edgeCount/3;
+            fprintf(stderr, "Split level automatically set to %d.\n", splitLevel);
+        } else if(splitLevel>=edgeCount){
+            fprintf(stderr, "Split level must be smaller than number of edges - exiting!\n");
+            return EXIT_FAILURE;
+        }
         DEBUGCALL(printEdgeNumbering());
         startThrackling();
         printEndSummary();
