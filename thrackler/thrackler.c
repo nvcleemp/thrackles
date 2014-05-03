@@ -101,6 +101,8 @@ unsigned long long int numberOfThrackles = 0;
 
 boolean justOne = FALSE;
 
+boolean testEdgeOrder = FALSE;
+
 //variables for splitting the generation into parts
 int splitLevel = -1;
 int splitlevelCounter = 0;
@@ -182,7 +184,7 @@ void printEdgeNumbering(){
         if(i == splitLevel){
             fprintf(stderr, "==== splitlevel ====\n");
         }
-        fprintf(stderr, "%d) %2d - %2d\n", i+1, numberedEdges[i][0]+1, numberedEdges[i][1]+1);
+        fprintf(stderr, "%2d) %2d - %2d\n", i+1, numberedEdges[i][0]+1, numberedEdges[i][1]+1);
     }
 }
 
@@ -730,6 +732,9 @@ void help(char *name) {
     fprintf(stderr, "    --test-common-part\n");
     fprintf(stderr, "       Runs the generation up to the splitting point and reports the number of\n");
     fprintf(stderr, "       times the splitting point is reached.\n");
+    fprintf(stderr, "    --test-edge-order\n");
+    fprintf(stderr, "       Show the order in which the edges will be added to the thrackle and\n");
+    fprintf(stderr, "       return.\n");
     fprintf(stderr, "    -h, --help\n");
     fprintf(stderr, "       Print this help and return.\n");
 }
@@ -748,6 +753,7 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] = {
         {"test-common-part", no_argument, NULL, 0},
         {"split-level", required_argument, NULL, 0},
+        {"test-edge-order", no_argument, NULL, 0},
         {"one", no_argument, NULL, '1'},
         {"modulo", required_argument, NULL, 'm'},
         {"help", no_argument, NULL, 'h'}
@@ -765,6 +771,9 @@ int main(int argc, char *argv[]) {
                         break;
                     case 1:
                         splitLevel = atoi(optarg);
+                        break;
+                    case 2:
+                        testEdgeOrder = TRUE;
                         break;
                     default:
                         fprintf(stderr, "Illegal option.\n");
@@ -828,6 +837,11 @@ int main(int argc, char *argv[]) {
         } else if(splitLevel>=edgeCount){
             fprintf(stderr, "Split level must be smaller than number of edges - exiting!\n");
             return EXIT_FAILURE;
+        }
+        if(testEdgeOrder){
+            fprintf(stderr, "Edges will be added in the following order:\n");
+            printEdgeNumbering();
+            return EXIT_SUCCESS;
         }
         DEBUGCALL(printEdgeNumbering());
         startThrackling();
