@@ -6,6 +6,8 @@ stdin = [l.strip() for l in sys.stdin if '>>' not in l]
 
 vertex_count = int(sys.argv[1])
 
+print('\\documentclass[a4paper]{article}\n\\usepackage{tikz}\n\\begin{document}')
+
 while '0' in stdin:
     zero = stdin.index('0')
 
@@ -24,7 +26,6 @@ while '0' in stdin:
         adjacency[v] = adj
         vertices.append(v)
 
-    print('\\documentclass[a4paper]{article}\n\\usepackage{tikz}\n\\begin{document}')
     print('\\begin{tikzpicture}[scale=2]')
     for v in vertices:
         if v <= vertex_count:
