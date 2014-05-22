@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 
 stdin = [l.strip() for l in sys.stdin if '>>' not in l]
