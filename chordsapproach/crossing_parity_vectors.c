@@ -58,6 +58,7 @@ LISTENTRY *newListEntry(bitset vector){
     }
     entry->vector = vector;
     entry->multiplicity = 1;
+    entry->larger = entry->smaller = NULL;
     parityVectorCount++;
     return entry;
 }
