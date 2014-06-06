@@ -1,4 +1,4 @@
-all: build/chords_5-3 build/chords_5-5 build/crossing_parity_vectors
+all: build/chords_5-3 build/chords_5-5 build/crossing_parity_vectors build/chords
 
 clean:
 	rm -rf build
@@ -13,5 +13,9 @@ build/chords_5-5: chords_5-5.c
 	cc -o $@ -O4 $^
 
 build/crossing_parity_vectors: crossing_parity_vectors.c
+	mkdir -p build
+	cc -o $@ -O4 $^
+
+build/chords: chords.c
 	mkdir -p build
 	cc -o $@ -O4 $^
