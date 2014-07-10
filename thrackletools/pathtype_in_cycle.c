@@ -317,7 +317,7 @@ void help(char *name) {
     fprintf(stderr, "The program %s prints the type of each path of given length\n", name);
     fprintf(stderr, "for thrackles in thrackle_code format.\n\n");
     fprintf(stderr, "Usage\n=====\n");
-    fprintf(stderr, " %s [options]\n\n", name);
+    fprintf(stderr, " %s [options] n\n\n", name);
     fprintf(stderr, "\nThis program can handle graphs up to %d vertices. Recompile if you need larger\n", MAXN);
     fprintf(stderr, "graphs.\n\n");
     fprintf(stderr, "Valid options\n=============\n");
@@ -326,7 +326,7 @@ void help(char *name) {
 }
 
 void usage(char *name) {
-    fprintf(stderr, "Usage: %s [options]\n", name);
+    fprintf(stderr, "Usage: %s [options] n\n", name);
     fprintf(stderr, "For more information type: %s -h \n\n", name);
 }
 
@@ -356,6 +356,17 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    int pathLength;
+    
+    if(argc == optind){
+        pathLength = 4;
+    } else if(argc == optind + 1) {
+        pathLength = atoi(argv[optind]);
+    } else {
+        usage(name);
+        return EXIT_FAILURE;
+    }
+    
     /*=========== read graph ===========*/
 
     unsigned short code[MAXCODELENGTH];
@@ -371,7 +382,7 @@ int main(int argc, char *argv[]) {
         thracklesRead++;
         fprintf(stderr, "Thrackle %d: %d edges\n", thracklesRead, originalEdgeCounter);
         for(i = 0; i < originalEdgeCounter; i++){
-            printTypeForPath(stderr, i, 5);
+            printTypeForPath(stderr, i, pathLength);
         }
         fprintf(stderr, "\n");
     }
